@@ -11,12 +11,13 @@ import {
 import { useState, useEffect } from "react";
 import { useMapContext } from "../mapContext/useMapContext";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
-import { IconButton, Tooltip } from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import { IconButton, Tooltip, Button } from "@mui/material";
 import { PlaceMarker } from "./PlaceMarker";
 
 export const DynamicMap = ({ places }) => {
   //contexts
-  const { coords } = useMapContext();
+  const { coords, setCoords, userLocation, setLocation } = useMapContext();
 
   //internal states
   const [markers, setMarkers] = useState([]);
@@ -48,6 +49,34 @@ export const DynamicMap = ({ places }) => {
     setMainMarkerShown(true);
   };
 
+  const redoSearch = () => {
+    const newCenter = map.getCenter();
+    const newLat = newCenter.lat();
+    const newLng = newCenter.lng();
+
+    //lng return from getCenter() must be normalized
+    const wrapLng = (lng) => {
+      return ((((lng + 180) % 360) + 360) % 360) - 180;
+    };
+
+    const normalizedCoords = {
+      lat: newLat,
+      lng: wrapLng(newLng),
+    };
+    setCoords(normalizedCoords);
+  };
+
+  const resetUserLocation = () => {
+    if (userLocation.exists) {
+      map.panTo(userLocation.location);
+      map.setZoom(15);
+      setMainMarkerShown(true);
+      setCoords(userLocation.location);
+    } else {
+      navigator.geolocation.getCurrentPosition(setLocation);
+    }
+  };
+
   //const handleMouseEnter = useCallback(() => setInfoWindowShown(true));
   //const handleClose = useCallback(() => setInfoWindowShown(false), []);
   return (
@@ -63,8 +92,8 @@ export const DynamicMap = ({ places }) => {
         // onZoomChanged={handleZoomChange}
         disableDefaultUI
       >
-        <MapControl position={ControlPosition.INLINE_END_BLOCK_CENTER}>
-          <Tooltip title="Click to re-center to your location">
+        <MapControl className="mapRecenter" position={ControlPosition.INLINE_END_BLOCK_CENTER}>
+          <Tooltip title="Click to re-center the map">
             <IconButton
               aria-label="recenter map"
               onClick={recenter}
@@ -82,6 +111,52 @@ export const DynamicMap = ({ places }) => {
                 }}
               ></MyLocationIcon>
             </IconButton>
+          </Tooltip>
+        </MapControl>
+
+        <MapControl className="resetLocation" position={ControlPosition.INLINE_END_BLOCK_CENTER}>
+          <Tooltip title="Go back to your current location">
+            <IconButton
+              aria-label="reset to user location"
+              onClick={resetUserLocation}
+              sx={{
+                boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                bgcolor: "rgba(255, 255, 255, .7)",
+                "&:hover": {
+                  backgroundColor: `white`,
+                },
+              }}
+            >
+              <LocationOnIcon
+                sx={{
+                  fontSize: 23,
+                }}
+              ></LocationOnIcon>
+            </IconButton>
+          </Tooltip>
+        </MapControl>
+
+        <MapControl className="redoSearch" position={ControlPosition.BLOCK_START_INLINE_CENTER}>
+          <Tooltip title="redo your current search with the current map area">
+            <Button
+              className="redoSearchButton"
+              aria-label="set new map center"
+              variant="outlined"
+              color="--rooted-dark-green"
+              onClick={redoSearch}
+              sx={{
+                boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                bgcolor: "rgba(255, 255, 255, .8)",
+                "&:hover": {
+                  backgroundColor: `var(--rooted-green)`,
+                  color: `white`,
+                  borderColor: `var(--rooted-green)`,
+                },
+                marginTop: ".5rem",
+              }}
+            >
+              Redo Search Area Here
+            </Button>
           </Tooltip>
         </MapControl>
         {/* marker/pin @ user location/coords lat/lng */}

@@ -26,7 +26,7 @@ export const createBusiness = async (place) => {
       place.displayName.text,
       place.formattedAddress,
       place.internationalPhoneNumber,
-      place.editorialSummary,
+      place.editorialSummary ? place.editorialSummary.text : null,
       place.websiteUri,
       null,
       place.rating,
@@ -34,7 +34,7 @@ export const createBusiness = async (place) => {
     ]);
     return res.rows[0];
   } catch (err) {
-    console.log(err);
+    console.log("createBusiness Error: ", err, " Place associated w error: ", place);
   }
 };
 
