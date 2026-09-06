@@ -135,27 +135,21 @@ function DiscoverPage() {
         {loading && <CircularProgress aria-label="Loading places" />}
 
         {error && <Typography color="error">{error}</Typography>}
-
-        <div className="dynamicMapContainer">
+        
+        <div className="placesView">
           <DynamicMap className="mainMap" places={places} />
-        </div>
-
+        
         {!loading && !error && (
           <Box>
             <Box
               className="discover-results-grid"
-              sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(3, 1fr)",
-                },
-                gap: 3,
-              }}
             >
               {places.map((place) => (
-                <Card key={place.id}>
+                <Card key={place.id}
+                sx={{
+                  height: "100%",
+                  maxHeight: "175px",
+                }}>
                   <CardActionArea
                     onClick={() => setSelectedPlace(place)}
                     aria-label={`View details for ${place.displayName.text}`}
@@ -200,6 +194,7 @@ function DiscoverPage() {
             )}
           </Box>
         )}
+        </div>
       </main>
       <DetailsDialog
         place={selectedPlace}

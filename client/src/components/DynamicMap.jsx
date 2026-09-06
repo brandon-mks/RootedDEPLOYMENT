@@ -51,9 +51,9 @@ export const DynamicMap = ({ places }) => {
   //const handleMouseEnter = useCallback(() => setInfoWindowShown(true));
   //const handleClose = useCallback(() => setInfoWindowShown(false), []);
   return (
-    <div className="mapContainer">
+    <div className="dynamicMapContainer">
       <Map
-        style={{ width: "60%", minWidth: "350px", height: "400px" }}
+        style={{ width: "100%", minWidth: "350px", height: "500px" }}
         defaultCenter={coords}
         defaultZoom={15}
         mapId={`8ddeff7eddcb919481a5064b`}

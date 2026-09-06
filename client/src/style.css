@@ -729,13 +729,29 @@ a {
    Discover Results
 ============================== */
 
+.placesView {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.placesView > .MuiBox-root {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
 .discover-results-grid {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
   width: 100%;
   max-width: 1180px;
   min-height: 464px;
+  margin-bottom: .5rem;
   margin-inline: auto;
   align-content: start;
-  grid-auto-rows: 220px;
+  /* grid-auto-rows: 220px; */
+  gap: .5rem;
 }
 
 .discover-results-grid .MuiCard-root {
@@ -811,10 +827,25 @@ a {
 }
 
 /* Phones can use their natural page height. */
-@media (max-width: 599px) {
+@media (max-width: 775px) {
   .discover-results-grid {
     min-height: 0;
   }
+
+  .discover-results-grid {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .placesView > .MuiBox-root {
+    overflow-y: hidden;
+    overflow-x: scroll;
+  }
+
+  .discover-results-grid > .MuiCard-root {
+  height: 100%;
+  min-width: 250px;
+}  
 }
 
 /* ==============================
@@ -1663,7 +1694,7 @@ a {
   z-index: 100;
 
   width: 100%;
-  margin-top: auto;
+  margin-top: .5rem;
   padding: 10px 16px;
 
   display: flex;
@@ -3220,7 +3251,8 @@ a {
 }
 
 .dynamicMapContainer {
-  margin-bottom: 32px;
+  margin-bottom: .5rem;
+  flex-grow: 2;
 }
 
 .changeCenterInfoWindow > a {
