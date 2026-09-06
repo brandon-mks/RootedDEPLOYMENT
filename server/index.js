@@ -60,8 +60,6 @@ app.use((err, req, res, next) => {
 
 const init = async () => {
   const PORT = process.env.PORT || 3000;
-  // The Places fixture does not require a database connection.
-  // Connect and seed only when a database URL has been configured.
   if (process.env.EXTERNAL_DATABASE || process.env.DATABASE_URL) {
     try {
       await client.connect();

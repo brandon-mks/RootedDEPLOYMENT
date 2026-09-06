@@ -34,7 +34,7 @@ function DiscoverPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages] = useState(1);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const { coords } = useMapContext();
 
@@ -42,6 +42,7 @@ function DiscoverPage() {
     async function loadPlaces() {
       setLoading(true);
       setError("");
+      setPlaces([]);
       try {
         const response = await fetch("/api/places", {
           method: "POST",
@@ -56,18 +57,15 @@ function DiscoverPage() {
             },
           }),
         });
-        /*
-        const data = await getPlaces({
-          category: selectedCategory,
-          limit: 6,
-          page,
-        });
-        */
         const data = await response.json();
         setPlaces(data);
         //setTotalPages(data.totalPages);
       } catch (err) {
-        setError(err.message);
+        if (err.message == "Failed to execute 'json' on 'Response': Unexpected end of JSON input") {
+          setError(
+            "Oops! No locations of the selected type exist within your current search area.",
+          );
+        }
         console.log(err.message);
         console.log(err);
       } finally {
@@ -96,9 +94,9 @@ function DiscoverPage() {
           spacing={1}
           className="discover-filters"
           sx={{
-            marginBottom: 4,
+            marginBottom: 1.5,
             overflowX: "auto",
-            paddingBottom: 1,
+            paddingBottom: 0.5,
           }}
         >
           {categories.map((category) => {
@@ -135,65 +133,65 @@ function DiscoverPage() {
         {loading && <CircularProgress aria-label="Loading places" />}
 
         {error && <Typography color="error">{error}</Typography>}
-        
+
         <div className="placesView">
           <DynamicMap className="mainMap" places={places} />
-        
-        {!loading && !error && (
-          <Box>
-            <Box
-              className="discover-results-grid"
-            >
-              {places.map((place) => (
-                <Card key={place.id}
-                sx={{
-                  height: "100%",
-                  maxHeight: "175px",
-                }}>
-                  <CardActionArea
-                    onClick={() => setSelectedPlace(place)}
-                    aria-label={`View details for ${place.displayName.text}`}
-                    className="discover-card-action"
+
+          {!loading && !error && (
+            <Box>
+              <Box className="discover-results-grid">
+                {places.map((place) => (
+                  <Card
+                    key={place.id}
+                    sx={{
+                      height: "100%",
+                      maxHeight: "175px",
+                    }}
                   >
-                    <CardContent>
-                      <Typography variant="h6" component="h2">
-                        {place.displayName.text}
-                      </Typography>
-
-                      <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
-                        {place.formattedAddress}
-                      </Typography>
-
-                      {place.rating != null && (
-                        <Typography variant="body2" sx={{ marginTop: 2 }}>
-                          Rating: {place.rating}
+                    <CardActionArea
+                      onClick={() => setSelectedPlace(place)}
+                      aria-label={`View details for ${place.displayName.text}`}
+                      className="discover-card-action"
+                    >
+                      <CardContent>
+                        <Typography variant="h6" component="h2">
+                          {place.displayName.text}
                         </Typography>
-                      )}
-                      <Typography
-                        variant="button"
-                        component="span"
-                        className="discover-details-link"
-                      >
-                        View details
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              ))}
-            </Box>
 
-            {totalPages > 1 && (
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(_event, nextPage) => setPage(nextPage)}
-                shape="rounded"
-                variant="outlined"
-                className="rooted-pagination"
-              />
-            )}
-          </Box>
-        )}
+                        <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
+                          {place.formattedAddress}
+                        </Typography>
+
+                        {place.rating != null && (
+                          <Typography variant="body2" sx={{ marginTop: 1 }}>
+                            Rating: {place.rating}
+                          </Typography>
+                        )}
+                        <Typography
+                          variant="button"
+                          component="span"
+                          className="discover-details-link"
+                        >
+                          View details
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                ))}
+              </Box>
+
+              {totalPages > 1 && (
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={(_event, nextPage) => setPage(nextPage)}
+                  shape="rounded"
+                  variant="outlined"
+                  className="rooted-pagination"
+                />
+              )}
+            </Box>
+          )}
         </div>
       </main>
       <DetailsDialog
