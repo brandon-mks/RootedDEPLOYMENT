@@ -827,7 +827,7 @@ a {
 }
 
 /* Phones can use their natural page height. */
-@media (max-width: 775px) {
+@media (width <= 775px) {
   .discover-results-grid {
     min-height: 0;
   }
